@@ -18770,11 +18770,12 @@ host-created files. The full app's file-preview viewer is covered separately.
 - **Preconditions:** The locked Electron 43 runtime, built workspace packages,
   and an isolated profile. Only a local HTTPS fixture and local proxy are used;
   trust is confined to the test process/session and fixture certificate.
-- **Steps:** Run `node scripts/e2e-provider-client-certificate.mjs`. Confirm the
-  original `net.fetch` aborts before HTTP. Probe the model list and connection
-  through the real metadata service; repeat with an invalid fixture key and an
-  authenticated custom HTTP proxy. Return a cross-origin redirect, then cancel
-  a pending response.
+- **Steps:** Run `node scripts/e2e-provider-client-certificate.mjs`. Confirm one
+  real `net.fetch` fails or stalls before HTTP. Replay that isolated fixture
+  failure for subsequent probes to avoid a second Chromium TLS handshake, then
+  exercise model discovery and connection through the real metadata fallback;
+  repeat with an invalid fixture key and an authenticated custom HTTP proxy.
+  Return a cross-origin redirect, then cancel a pending response.
 - **Expected:** Valid credentials return the fixture model; invalid credentials
   reach HTTP 401. The retry follows the proxy route, sends no client identity,
   refuses cross-origin redirects and aborts with the original signal.
