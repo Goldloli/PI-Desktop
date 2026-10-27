@@ -266,15 +266,25 @@ function TranscriptBody({
     }
   };
 
-  const canCopyConversation = hasConversationToCopy({
+  /*
+    Both copy predicates are read only where a menu is built: the background
+    menu on right-click and the ring when it opens. Computing them on every
+    transcript update would read every historical body for a disabled or
+    unopened menu.
+  */
+  const canCopyConversation = () => hasConversationToCopy({
     sessionId,
     hasMoreBefore,
     hasMoreAfter,
     messages,
   });
 
-  /* The newest settled answer, for the ring's optional copy slot. */
-  const lastAnswer = useMemo(() => {
+  /*
+    The newest settled answer, for the ring's optional copy slot. Read lazily:
+    the ring builds its items only when it opens, so an unopened or disabled
+    ring must not scan historical message bodies on every transcript update.
+  */
+  const findLastAnswer = (): string => {
     for (let index = messages.length - 1; index >= 0; index -= 1) {
       const message = messages[index];
       if (message?.role === "assistant" && message.content.trim()) {
@@ -282,15 +292,16 @@ function TranscriptBody({
       }
     }
     return "";
-  }, [messages]);
+  };
 
   /*
     One slot per direction, in ring order. An action the conversation cannot
     fill (no answer yet, or the `none` placeholder) keeps its sector disabled
     so the geometry does not depend on message state.
   */
-  const buildRadialMenuItems = (): RadialMenuSlot[] =>
-    RADIAL_MENU_DIRECTIONS.map((direction) => {
+  const buildRadialMenuItems = (): RadialMenuSlot[] => {
+    const copyable = canCopyConversation();
+    return RADIAL_MENU_DIRECTIONS.map((direction) => {
       const action: RadialMenuAction = radialMenu.slots[direction];
       const id = `${direction}:${action}`;
       const label = t(RADIAL_MENU_ACTION_LABEL_KEYS[action]);
@@ -300,7 +311,7 @@ function TranscriptBody({
             id,
             label,
             icon: <IconCopy size={18} />,
-            disabled: !canCopyConversation,
+            disabled: !copyable,
             onSelect: () => void copyConversation(),
           };
         case "select-conversation":
@@ -310,7 +321,8 @@ function TranscriptBody({
             icon: <IconTextSelect size={18} />,
             onSelect: () => selectText(contentRef.current),
           };
-        case "copy-last-answer":
+        case "copy-last-answer": {
+          const lastAnswer = findLastAnswer();
           return {
             id,
             label,
@@ -318,6 +330,7 @@ function TranscriptBody({
             disabled: !lastAnswer,
             onSelect: () => void copyText(lastAnswer),
           };
+        }
         case "scroll-top":
           return {
             id,
@@ -377,6 +390,7 @@ function TranscriptBody({
           return { id, label, icon: <IconChat size={18} />, disabled: true, onSelect: () => {} };
       }
     });
+  };
 
   const onContextMenu = (event: ReactMouseEvent<HTMLDivElement>) => {
     if (radialMenu.enabled) {
@@ -389,7 +403,7 @@ function TranscriptBody({
       label: t("chat.conversationMenu"),
       items: conversationMenuItems({
         t,
-        canCopy: canCopyConversation,
+        canCopy: canCopyConversation(),
         onCopyConversation: () => void copyConversation(),
         scrollRef,
         contentRef,
