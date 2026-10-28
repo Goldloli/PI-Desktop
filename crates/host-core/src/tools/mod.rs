@@ -28,6 +28,8 @@ pub mod hashline;
 pub mod ignore_rules;
 mod image_dimensions;
 pub mod shell;
+#[cfg(windows)]
+mod windows_runner_job;
 
 pub use hashline::{HashlineContext, HashlineStore};
 
@@ -196,10 +198,23 @@ impl ProcessOwnership {
         let Some(job) = self.job else {
             return Err("shell runner process ownership is unavailable".into());
         };
-        if unsafe { TerminateJobObject(job, 1) == 0 } {
-            Err("TerminateJobObject failed for the shell runner".into())
+        let job_error = if unsafe { TerminateJobObject(job, 1) } == 0 {
+            Some(format!(
+                "TerminateJobObject failed for the shell runner: {}",
+                io::Error::last_os_error()
+            ))
         } else {
-            Ok(())
+            None
+        };
+        // The job only reaches members it already contains, so a command the
+        // shell launched before `AssignProcessToJobObject` is still running
+        // (#1805). Keep terminating the job's own membership set until it is
+        // empty instead of assuming the single call covered it.
+        let member_error = windows_runner_job::terminate_members(job).err();
+        match (job_error, member_error) {
+            (Some(job), Some(members)) => Err(format!("{job}; {members}")),
+            (Some(error), None) | (None, Some(error)) => Err(error),
+            (None, None) => Ok(()),
         }
     }
 
