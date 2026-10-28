@@ -2,6 +2,27 @@ import type { ChangelogEntry } from "./changelog.js";
 
 export const enEntries: ChangelogEntry[] = [
   {
+    version: "0.22.0",
+    date: "2026-10-28",
+    highlights: [
+      "Right-click a work panel tab to close it, close the others, or close them all.",
+      "Run independent Read, Glob, and Grep tool calls in parallel within one turn.",
+      "Open sessions and project groups faster: file-derived session summaries are cached by file identity.",
+      "Keep the delegation prompt stable across settlements so resumed conversations replay consistently.",
+      "Keep restored live turns visibly running instead of showing them as finished.",
+      "Stop model discovery from silently removing a saved model from the Composer.",
+      "See refused background writes and external opens instead of a silent failure.",
+      "Keep transcript writes working after a crash leaves a torn line, and keep the sidebar submenu on screen.",
+      "Turn on OpenAI Fast mode per model in Settings, then send /fast to use the priority service tier in one conversation.",
+      "Use the Pi 1.4.0 agent engine, with malformed tool calls recovered and orphaned tool results dropped.",
+      "Open an opt-in radial context menu on the transcript background.",
+      "Keep stored tool images lossless and bound long history mutations.",
+      "Terminate a whole background task process tree on Windows, so stopping a dev server actually stops it.",
+      "Detach plugin views on reload, keep native tab menus above the embedded browser, and scale docked plugin pages with the app text size.",
+      "Persist the follow intent before navigation so a session stays recoverable after a queued steer.",
+    ],
+  },
+  {
     version: "0.21.0",
     date: "2026-10-24",
     highlights: [

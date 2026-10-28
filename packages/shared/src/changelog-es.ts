@@ -2,6 +2,27 @@ import type { ChangelogEntry } from "./changelog.js";
 
 export const esEntries: ChangelogEntry[] = [
   {
+    version: "0.22.0",
+    date: "2026-10-28",
+    highlights: [
+      "Haz clic derecho en una pestaña del panel de trabajo para cerrarla, cerrar las demás o cerrarlas todas.",
+      "Ejecuta en paralelo las llamadas independientes a Read, Glob y Grep dentro de un mismo turno.",
+      "Las conversaciones y los grupos de proyectos abren más rápido: las reseñas de conversación se guardan en caché por identidad de archivo.",
+      "El prompt de delegación se mantiene estable entre cierres, de modo que las conversaciones reanudadas se reproducen de forma coherente.",
+      "Los turnos en vivo restaurados siguen apareciendo en ejecución en lugar de darse por terminados.",
+      "El descubrimiento de modelos ya no retira en silencio un modelo guardado del compositor.",
+      "Las escrituras en segundo plano y las aperturas externas rechazadas se muestran en lugar de fallar en silencio.",
+      "Tras un cierre inesperado con una línea cortada, el registro sigue escribiendo y el submenú lateral permanece en pantalla.",
+      "Activa el modo Fast de OpenAI por modelo en Ajustes y envía /fast para usar el nivel de servicio prioritario en una conversación.",
+      "Usa el motor de agente Pi 1.4.0, con llamadas a herramientas malformadas recuperadas y resultados huérfanos descartados.",
+      "Abre un menú contextual radial opcional en el fondo del registro.",
+      "Las imágenes de herramientas se guardan sin pérdida y las escrituras largas del historial quedan acotadas.",
+      "En Windows, detener una tarea en segundo plano termina todo el árbol de procesos, así que el servidor de desarrollo sí se detiene.",
+      "Las vistas de complementos se separan al recargar, los menús de pestañas nativos quedan sobre el navegador incrustado y las páginas acopladas siguen el tamaño de texto de la app.",
+      "La intención de seguimiento se guarda antes de navegar, así que la sesión sigue siendo recuperable tras un steer en cola.",
+    ],
+  },
+  {
     version: "0.21.0",
     date: "2026-10-24",
     highlights: [
